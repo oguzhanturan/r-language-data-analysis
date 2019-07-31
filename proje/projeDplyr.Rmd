@@ -1,0 +1,77 @@
+---
+title: "Bayraklarýna göre ülkeler"
+output: 
+         html_notebook: default
+         pdf_document: default
+         word_document: default
+---
+```{r}
+options(stringsAsFactors = FALSE)
+library(dplyr)
+library(ggplot2)
+library(rpart)
+library(rpart.plot)
+
+veri=read.table("flag_data.csv",sep = ',',header = TRUE,na.strings = 'NA')
+#veri çekildi
+colnames(veri)= c("Ulke","Kita","Konum","YuzOlcumu","Nufus","Dil","Din","V-cizgi","H-cizgi","RenkSayisi","Red","Green","Blue","Gold","White","Black","Orange","AnaRenk","DaireNum","Simge","Text")
+#colon isimleri deðiþtirildi
+
+veri =
+veri %>% left_join(.,
+tibble(Kita=1:6,Kita_Ismi=c("K-Amerika","G-Amerika","Avrupa","Afrika","Asya","Okyanusya")),by="Kita") %>% tbl_df()#kýta isimleri 1:6 ya kadar olan rakamlardan gerçek isimlerine çevrildi.
+
+veri=
+veri %>% left_join(.,
+tibble(Din=0:8,Dinler=c("Catholic", "Other Christian","Muslim","Buddhist","Hindu","Ethnic", "Marxist", "Others","bars " )),by="Din") %>% tbl_df()#din isimleri 0:8 ye kadar olan rakamlardan gerçek isimlerine deðiþtirildi.
+
+
+veri %>%
+  select(-starts_with("sil")) %>%
+  tbl_df()
+
+```
+Yukarýdaki kodlarda satýrlardaki sayýsal veriler String veriler ile deðiþtirilmiþtir.
+```{r}
+ss1=veri %>% 
+    group_by(Kita_Ismi) %>% count(Kita_Ismi)
+# isim=c("K-Amerika","G-Amerika","Avrupa","Afrika","Asya","Okyanusya")
+  ggplot(ss1,aes(x=Kita_Ismi,y=n)) + geom_bar(stat="identity",aes(fill=Kita_Ismi))
+```
+Kýtalara göre toplam ülke sayýlarý
+
+```{r}
+  ss2=veri %>% 
+    group_by(Dinler) %>% count(Dinler)
+    ggplot(ss2,aes(x=Dinler,y=n)) + 
+     geom_count(aes(color=as.factor(Dinler)))+
+     theme(axis.text.x = element_text(angle = 45, vjust=0.5, hjust=0.5)) #+ coord_flip()
+```
+Dinlere Göre Toplam Ülke Sayýlarý
+```{r}
+ss3=veri %>% 
+    filter(AnaRenk=='red' & RenkSayisi==2)
+ ggplot(ss3,aes(x=Ulke,y=Dinler))+geom_point(aes(color=as.factor(Dinler)))+
+    theme(axis.text.x = element_text(angle = 45, vjust=0.5, hjust=0.5))
+```
+Bayraðýnda 2 renk olan ve ana rengi Kýrmýzý Olan Ülkelerin dinleri
+```{r}
+for(i in 0:6){
+  if(veri$Din=='0'){veri$Din="Catholic"}
+  if(veri$Din=='1'){veri$Din="Other Christian,"}
+  if(veri$Din=='2'){veri$Din="Muslim"}
+  if(veri$Din=='3'){veri$Din="Budhist"}
+  if(veri$Din=='4'){veri$Din="Hindu"}
+  if(veri$Din=='5'){veri$Din="Ethnic"}
+  if(veri$Din=='6'){veri$Din="Marxist"}else{veri$Din="other"}
+}
+veri1=veri %>%
+  select(-Ulke) %>%
+  tbl_df()
+
+flag_model=rpart(Din~.,veri1,method = "class")
+rpart.plot(flag_model,)#prp veya rpart.plot  çizim yapýyor Tree çiziyor.
+```
+
+
+Oðuzhan Turan - Aziz Demirtaþs

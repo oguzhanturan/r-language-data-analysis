@@ -1,0 +1,55 @@
+---
+title: "dplyr alistirmalarým"
+output: 
+  html_notebook: default
+  pdf_document: default
+  word_document: default
+  #bu tiplerde çýktý veren hazýr döküman yaratmaya çalýþýyoruz.
+  #select/rename
+  #filter
+  #arrange
+  #mutate/transmute
+  #group_by/summarise
+  #yeni r blogu açmak ctrl alt ý
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+setwd("F:/RStudio/gun2")#çalýþma dizini deðiþtirme
+load("sehir_sicaklik.RData")
+head(sehir_sicaklik)
+
+```
+
+```{r}
+#sehir_sicaklik %>%;tbl_df()
+#glimpse(sehir_sicaklik) 
+#sehir_sicaklik %>% select(yil, ay, gun, Venedik) venedike ait bilgileri çek
+#sehir_sicaklik %>% select(Amsterdam:Venedik) # amsterdam to venedik demek
+#sehir_sicaklik %>% select(-Londra,-NY) istenmeyen sutünlarý çýkartma
+#sehir_sicaklik %>% rename('NewYork2'=NY) #isim deðiþikliði yapma
+#sehir_sicaklik %>%filter(gun<=3) her ayýn ilk 3 günü
+#sehir_sicaklik %>%filter(ay==11 & Venedik>NY) Diyelim ki sadece kasým ayýnda Venedik’in NY’tan daha sýcak olduðu günleri 
+#sehir_sicaklik %>%filter(ay==7 & (Amsterdam>Londra | Amsterdam>Venedik)) Amsterdam’ýn Temmuz’da Londra veya Venedik’ten daha sýcak olduðu günleri i
+#sehir_sicaklik %>% filter(abs(Amsterdam-Venedik) >= 12)  Amsterdam ve Venedik arasýndaki mutlak sýcaklýk farkýnýn 12 derece
+#sehir_sicaklik %>% arrange(NY) arrange basitçe deðerleri A’dan Z’ye veya küçükten büyüðe sýralar. Sadece sýralamak istediðiniz sütunlarý yazmanýz yeterli. Ters sýrada kullanmak için ilgili sütun isimlerini desc(column_name) olarak ifade etmelisiniz.
+#sehir_sicaklik %>%arrange(NY,desc(Amsterdam)) Veriyi NY’taki sýcaklýðýn artýþý ve sonra Amsterdam’ýn düþüþü þeklinde sýralayýn.
+#sehir_sicaklik %>%arrange(desc(yil) %% desc(ay) %% desc(gun)) #Veriyi azalan tarihe göre sýralayýn.
+#sehir_sicaklik %>% arrange(Londra-Amsterdam)En son olarak Londra ve Amsterdam’daki hava sýcaklýklarý farkýný artan bir þekilde sýralayýn.
+#sehir_sicaklik %>% mutate(VAfark = Venedik - Amsterdam)V enedik ve Amsterdam arasýndaki sýcaklýk farkýný gün gün hesaplayýn.
+#sehir_sicaklik %>% summarise(Venedik_ort=mean(Venedik),NY_ort=mean(NY))
+#sehir_sicaklik %>% group_by(Amsterdam) %>% summarise(Amsterdam_ort=round(mean(Amsterdam),2))
+#sehir_sicaklik %>% group_by(yil,ay) %>% summarise(AwarmerN_n=sum(Amsterdam > NY))
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
